@@ -8,7 +8,9 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Favorite
@@ -22,12 +24,14 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontStyle
@@ -48,6 +52,7 @@ fun DetailScreen(
     detailViewModel: DetailViewModel = viewModel(factory = ViewModelFactory(Injection.provideRepo())),
     navigateBack: () -> Unit
 ) {
+
     val uiState by detailViewModel.uiState.collectAsState()
 
     LaunchedEffect(zodiacId) {
@@ -56,20 +61,30 @@ fun DetailScreen(
 
     when (uiState) {
         is UiState.Loading -> {
-            CircularProgressIndicator(modifier = Modifier.fillMaxSize())
+            CircularProgressIndicator()
         }
+
         is UiState.Success -> {
             val zodiac = (uiState as UiState.Success<Zodiac>).data
 
             Scaffold(
                 topBar = {
                     TopAppBar(
-                        title = { Text(zodiac.name) },
+                        title = { Text("Detail") },
                         navigationIcon = {
                             IconButton(onClick = navigateBack) {
-                                Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
+                                Icon(
+                                    Icons.AutoMirrored.Filled.ArrowBack,
+                                    contentDescription = "Back"
+                                )
                             }
-                        }
+                        },
+                        colors = TopAppBarDefaults.topAppBarColors(
+                            containerColor = Color(0xFF4682A9),
+                            titleContentColor = Color.White,
+                            actionIconContentColor = Color.White,
+                            navigationIconContentColor = Color.White
+                        )
                     )
                 },
                 floatingActionButton = {
@@ -77,42 +92,61 @@ fun DetailScreen(
                         onClick = {
                             detailViewModel.updateZodiac(zodiac.id, zodiac.isFavorite)
                         },
-                        content = {
-                            Icon(
-                                imageVector = if (zodiac.isFavorite) Icons.Default.Favorite else Icons.Default.FavoriteBorder,
-                                contentDescription = "Toggle Favorite"
-                            )
-                        }
-                    )
+                        containerColor = Color(0xFF91C8E4)
+                    ) {
+                        Icon(
+                            imageVector = if (zodiac.isFavorite) Icons.Default.Favorite else Icons.Default.FavoriteBorder,
+                            contentDescription = "Toggle Favorite",
+                            tint = Color.White
+                        )
+                    }
                 }
             ) { paddingValues ->
                 Column(
                     modifier = Modifier
                         .fillMaxSize()
                         .padding(paddingValues)
-                        .padding(16.dp)
+                        .background(Color(0xFFF6F4EB))
+                        .verticalScroll(rememberScrollState())
                 ) {
                     Image(
                         painter = painterResource(id = zodiac.photoUrl),
                         contentDescription = zodiac.name,
                         modifier = Modifier
                             .fillMaxWidth()
-                            .height(300.dp)
-                            .clip(RoundedCornerShape(8.dp))
+                            .height(400.dp)
+                            .clip(RoundedCornerShape(12.dp))
                             .background(MaterialTheme.colorScheme.surface),
                         contentScale = ContentScale.Crop
                     )
                     Spacer(modifier = Modifier.height(20.dp))
-                    Text(text = zodiac.name, style = MaterialTheme.typography.headlineLarge)
+                    Text(
+                        text = zodiac.name,
+                        style = MaterialTheme.typography.headlineLarge,
+                        modifier = Modifier.padding(start = 14.dp)
+                    )
                     Spacer(modifier = Modifier.height(10.dp))
-                    Text(text = zodiac.birthdate, style = MaterialTheme.typography.bodyLarge.copy(fontStyle = FontStyle.Italic))
+                    Text(
+                        text = zodiac.birthdate,
+                        style = MaterialTheme.typography.bodyLarge.copy(fontStyle = FontStyle.Italic),
+                        modifier = Modifier.padding(start = 14.dp)
+                    )
                     Spacer(modifier = Modifier.height(20.dp))
-                    Text(text = zodiac.description, style = MaterialTheme.typography.bodyLarge)
+                    Text(
+                        text = zodiac.description,
+                        style = MaterialTheme.typography.bodyLarge,
+                        modifier = Modifier.padding(start = 14.dp, end = 68.dp, bottom = 30.dp)
+                    )
                 }
             }
         }
+
         is UiState.Error -> {
-            Text(text = "Error loading data", modifier = Modifier.fillMaxSize(), style = MaterialTheme.typography.bodyLarge)
+            Text(
+                text = "Error loading data",
+                modifier = Modifier.fillMaxSize(),
+                style = MaterialTheme.typography.bodyLarge
+            )
         }
     }
 }

@@ -1,4 +1,4 @@
-package com.dicoding.zodiacs.ui.items
+package com.dicoding.zodiacs.ui.components
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -36,7 +36,8 @@ fun ItemZodiac(
 ) {
     Row(
         modifier = modifier
-            .height(70.dp)
+            .height(120.dp)
+            .width(420.dp)
             .padding(8.dp)
             .background(Color.White, RoundedCornerShape(12.dp))
     ) {
@@ -45,7 +46,7 @@ fun ItemZodiac(
             contentDescription = "image_zodiacs",
             contentScale = ContentScale.Crop,
             modifier = Modifier
-                .size(65.dp)
+                .size(120.dp)
                 .clip(CircleShape)
         )
         Spacer(modifier = Modifier.width(8.dp))
@@ -57,11 +58,11 @@ fun ItemZodiac(
         ) {
             Text(
                 text = name,
-                style = MaterialTheme.typography.titleMedium
+                style = MaterialTheme.typography.displaySmall
             )
             Text(
                 text = birthdate,
-                style = MaterialTheme.typography.bodySmall
+                style = MaterialTheme.typography.titleMedium
             )
         }
     }

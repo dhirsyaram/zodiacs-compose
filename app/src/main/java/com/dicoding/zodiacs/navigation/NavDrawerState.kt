@@ -32,12 +32,6 @@ class NavDrawerState (
         }
     }
 
-    fun onSearchClick() {
-        scope.launch {
-
-        }
-    }
-
     fun onItemSelected(item: MenuItem) {
         scope.launch {
             drawerState.close()
